@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Fail immediately on non-zero exit code.
+set -e
+
+# No compile step for tests (`sbt` tool will build for test)
+exit 0
