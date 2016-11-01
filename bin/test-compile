@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Fail immediately on non-zero exit code.
+set -e
+
+# Run the main compile script.
+eval "bin/compile $@"

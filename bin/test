@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Fail immediately on non-zero exit code.
+set -e
+
+# If this is an engine, move into its prefix.
+if [ -d pio-engine ]
+then
+  cd pio-engine
+fi
+
+# Execute Scala tests
+sbt test
