@@ -7,9 +7,9 @@ BUILD_DIR=${1:-}
 random_part=`ruby -r securerandom -e "STDOUT << SecureRandom.hex(4)"`
 RANDOM_BUILD_DIR=/tmp/build_for_ci_$random_part
 
-echo '       Mock build directory is $RANDOM_BUILD_DIR'
+echo "       Mock build directory is $RANDOM_BUILD_DIR"
 
-mkdir -p /tmp/build_for_ci
+mkdir -p $RANDOM_BUILD_DIR
 mv $BUILD_DIR/* $BUILD_DIR/.[!.]* $RANDOM_BUILD_DIR/
 
 # Run the main compile script.
