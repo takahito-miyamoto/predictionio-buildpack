@@ -3,5 +3,16 @@
 # Fail immediately on non-zero exit code.
 set -e
 
+BUILD_DIR=${1:-}
+random_part=`ruby -r SecureRandom -e "STDOUT << SecureRandom.hex(4)"`
+RANDOM_BUILD_DIR=/tmp/build_for_ci_$random_part
+
+echo '       Mock build directory is $RANDOM_BUILD_DIR'
+
+mkdir -p /tmp/build_for_ci
+mv $BUILD_DIR/* $BUILD_DIR/.[!.]* $RANDOM_BUILD_DIR/
+
 # Run the main compile script.
-eval "bin/compile $@"
+eval "bin/compile $RANDOM_BUILD_DIR $2 $3"
+
+mv $RANDOM_BUILD_DIR/* $RANDOM_BUILD_DIR/.[!.]* $BUILD_DIR/
