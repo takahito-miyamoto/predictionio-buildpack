@@ -6,6 +6,8 @@ set -e
 BUILD_DIR=${1:-}
 random_part=`ruby -r securerandom -e "STDOUT << SecureRandom.hex(4)"`
 RANDOM_BUILD_DIR=/tmp/build_for_ci_$random_part
+JAVA_HOME=$RANDOM_BUILD_DIR/.jdk
+PATH=$RANDOM_BUILD_DIR/.jdk/bin:$PATH
 
 echo "       Mock build directory is $RANDOM_BUILD_DIR"
 echo "       Current env:"
