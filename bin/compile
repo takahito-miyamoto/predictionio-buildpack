@@ -66,7 +66,7 @@ export_env_dir "$ENV_DIR" '^PREDICTIONIO_DIST_URL$'
 export_env_dir "$ENV_DIR" '^PIO_BUILD_SPARK_VERSION$'
 SPARK_VERSION="spark-${PIO_BUILD_SPARK_VERSION:-1.6.2}-bin-hadoop2.6"
 
-if [ "$PREDICTIONIO_DIST_URL" ]
+if [ "${PREDICTIONIO_DIST_URL:-}" ]
 then
   PIO_VERSION=custom-distribution
   # Assume no special PostgreSQL driver is required
