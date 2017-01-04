@@ -62,6 +62,7 @@ ENV_DIR=${3:-}
 BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 
 
+export_env_dir "$ENV_DIR" '^PREDICTIONIO_DIST_URL$'
 export_env_dir "$ENV_DIR" '^PIO_BUILD_SPARK_VERSION$'
 SPARK_VERSION="spark-${PIO_BUILD_SPARK_VERSION:-1.6.2}-bin-hadoop2.6"
 
@@ -71,6 +72,12 @@ then
   # No special PostgreSQL driver is required
   POSTGRESQL_DRIVER=''
   echo "Using Apache PredictionIO ${PIO_VERSION}" | indent
+elif [ "$PREDICTIONIO_DIST_URL" ]
+then
+  PIO_VERSION=custom-distribution
+  # Assume no special PostgreSQL driver is required
+  POSTGRESQL_DRIVER=''
+  echo "Using PredictionIO distribution at ${PREDICTIONIO_DIST_URL}" | indent
 else
   mkdir -p "$BUILD_DIR/.heroku"
   echo '# Presence of this file indicates a pre-Apache engine (<= 0.9)' > "$BUILD_DIR/.heroku/.is_old_predictionio"
@@ -84,7 +91,6 @@ PIO_BUILD=PredictionIO-${PIO_VERSION}
 
 # PredictionIO dist tarball URL, expects `.tar.gz` 
 default_url="https://marsikai.s3.amazonaws.com/${PIO_BUILD}.tar.gz"
-export_env_dir "$ENV_DIR" '^PREDICTIONIO_DIST_URL$'
 url="${PREDICTIONIO_DIST_URL-$default_url}"
 
 # The PATH set in .profile.d/pio-env.sh must match.
