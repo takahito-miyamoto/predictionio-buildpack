@@ -155,11 +155,11 @@ then
   topic "Moving build artifacts into place"
   # After PIO build at the runtime prefix, move the engine into the slug
   mv $app_prefix $BUILD_DIR
-  # Move the Procfile back to the top-level app directory or use default for engines
+  # Move the Procfile(s) back to the top-level app directory or use default for engines
   # (`bin/release` default_process_types have no effect since this is never the last buildpack)
   if [ -f "${BUILD_DIR}/${app_namespace}/Procfile" ]
   then
-    mv "${BUILD_DIR}/${app_namespace}/Procfile" $BUILD_DIR
+    mv $BUILD_DIR/$app_namespace/Procfile* $BUILD_DIR
   else
     mv "${BP_DIR}/Procfile-engine" "${BUILD_DIR}/Procfile"
   fi
