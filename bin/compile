@@ -164,6 +164,10 @@ then
     mv "${BP_DIR}/Procfile-engine" "${BUILD_DIR}/Procfile"
   fi
 
+  topic "Moving engine's bin/ into place"
+  mkdir -p $BUILD_DIR/bin
+  mv $BUILD_DIR/$app_namespace/bin/* $BUILD_DIR/bin/
+
   topic "Set-up train on release (disable with PIO_TRAIN_ON_RELEASE=false)"
   mkdir -p "$BUILD_DIR/bin"
   cp $BP_DIR/bin/engine/heroku-* "$BUILD_DIR/bin/"
