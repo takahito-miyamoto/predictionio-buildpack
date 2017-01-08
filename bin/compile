@@ -161,10 +161,10 @@ then
   fi
 
   topic "Moving engine's bin/ & conf/ into place"
-  mkdir -p $BUILD_DIR/bin
-  mv $BUILD_DIR/$app_namespace/bin/* $BUILD_DIR/bin/
-  mkdir -p $BUILD_DIR/conf
-  mv $BUILD_DIR/$app_namespace/conf/* $BUILD_DIR/conf/
+  mkdir -p $BUILD_DIR/$app_namespace/bin
+  mv $BUILD_DIR/$app_namespace/bin $BUILD_DIR/
+  mkdir -p $BUILD_DIR/$app_namespace/conf
+  mv $BUILD_DIR/$app_namespace/conf $BUILD_DIR/
 
   topic "Set-up train on release (disable with PIO_TRAIN_ON_RELEASE=false)"
   mkdir -p "$BUILD_DIR/bin"
