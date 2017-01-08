@@ -65,24 +65,20 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 export_env_dir "$ENV_DIR" '^PREDICTIONIO_DIST_URL$'
 export_env_dir "$ENV_DIR" '^PIO_BUILD_SPARK_VERSION$'
 SPARK_VERSION="spark-${PIO_BUILD_SPARK_VERSION:-1.6.2}-bin-hadoop2.6"
+POSTGRESQL_DRIVER=https://marsikai.s3.amazonaws.com/postgresql-9.4.1209.jar
 
 if [ "${PREDICTIONIO_DIST_URL:-}" ]
 then
   PIO_VERSION=custom-distribution
-  # Assume no special PostgreSQL driver is required
-  POSTGRESQL_DRIVER=''
   echo "Using PredictionIO distribution at ${PREDICTIONIO_DIST_URL}" | indent
 elif [ $(requires_apache_predictionio "$BUILD_DIR/template.json") ]
 then
   PIO_VERSION=0.10.0-incubating
-  # No special PostgreSQL driver is required
-  POSTGRESQL_DRIVER=''
   echo "Using Apache PredictionIO ${PIO_VERSION}" | indent
 else
   mkdir -p "$BUILD_DIR/.heroku"
   echo '# Presence of this file indicates a pre-Apache engine (<= 0.9)' > "$BUILD_DIR/.heroku/.is_old_predictionio"
   PIO_VERSION=0.9.5
-  POSTGRESQL_DRIVER=postgresql-9.4.1209.jar
   echo "Using PredictionIO $PIO_VERSION" | indent
 fi
 
@@ -182,5 +178,5 @@ if [ "$POSTGRESQL_DRIVER" ]
 then
   topic "Install PostgreSQL database driver"
   mkdir -p "${BUILD_DIR}/lib"
-  curl -s -L "https://marsikai.s3.amazonaws.com/$POSTGRESQL_DRIVER" > "${BUILD_DIR}/lib/postgresql_jdbc.jar"
+  curl -s -L "$POSTGRESQL_DRIVER" > "${BUILD_DIR}/lib/postgresql_jdbc.jar"
 fi
