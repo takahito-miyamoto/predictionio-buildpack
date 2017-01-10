@@ -109,6 +109,7 @@ To enable, either:
   ```
 * bring your own [s3 bucket](https://aws.amazon.com/s3/) by manually setting the [`PIO_S3_*` config vars](#environment-variables).
 
+⚠️ Note that with HDFS on Heroku, all filesystem path references must be absolute from `/` root, not relative or nested in User ID directory.
 
 ### Create a PredictionIO app in the eventserver
 
