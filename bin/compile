@@ -166,8 +166,13 @@ source .profile.d/pio-path.sh
 if [ -f "${BUILD_DIR}/engine.json" ]
 then
   topic "Build PredictionIO engine"
-  # Move to dyno-compatible prefix for `pio build`
-  mv $BUILD_DIR/* $app_prefix
+  # Move the contets of the build directory
+  # to dyno-compatible prefix for `pio build`.
+  # Ignore the `pio-support/` directory, a stable
+  # path for other buildpacks to write files.
+  shopt -s extglob
+  mv $BUILD_DIR/!(pio-support) $app_prefix
+  shopt -u extglob
   cd $app_prefix
   $dist_name/bin/pio build --verbose | indent
 
