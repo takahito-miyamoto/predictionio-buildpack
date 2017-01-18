@@ -161,7 +161,7 @@ heroku ps:scale \
 
 ## Retry release
 
-If the release (`pio train`) fails due to memory constraints or other transient error, you may use the Heroku CLI [release:retry plugin](https://github.com/heroku/heroku-releases-retry) to rerun the release without pushing a new deployment.
+If the release (`pio train`) fails due to memory constraints or other transient error, you may use the Heroku CLI [releases:retry plugin](https://github.com/heroku/heroku-releases-retry) to rerun the release without pushing a new deployment.
 
 ## Query for predictions
 
