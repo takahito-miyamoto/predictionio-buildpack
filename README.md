@@ -29,7 +29,7 @@ Please follow steps in order.
 Once deployed, how to work with the engine.
 
 * [Scale-up](#scale-up)
-* [Release retry](#release-retry)
+* [Retry release](#retry-release)
 * 🎯 [Query for predictions](#query-for-predictions)
 * [Diagnostics](#diagnostics)
 
