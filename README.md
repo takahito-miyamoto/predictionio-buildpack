@@ -2,22 +2,22 @@
 
 Enables data scientists and developers to deploy custom machine learning services created with [PredictionIO](https://predictionio.incubator.apache.org).
 
-This buildpack is part of an exploration to simplify traditionally highly-customized data science operations using the [Heroku developer experience](https://www.heroku.com/dx). When considering this proof-of-concept technology, please note its [current limitations](#limitations). We'd love to hear from you. [Open issues on this repo](https://github.com/heroku/predictionio-buildpack/issues) with feedback and questions.
+This buildpack is part of an exploration into utilizing the [Heroku developer experience](https://www.heroku.com/dx) to simplify data science operations. When considering this proof-of-concept technology, please note its [current limitations](#limitations). We'd love to hear from you. [Open issues on this repo](https://github.com/heroku/predictionio-buildpack/issues) with feedback and questions.
 
 ## Engines
 
 Supports engines created for **PredictionIO 0.10.0-incubating**.
 
-* [Classification demo](https://github.com/heroku/predictionio-engine-classification) presented at Dreamforce 2016. Implements Random Forests decision trees algorithm
+* [Classification demo](https://github.com/heroku/predictionio-engine-classification) presented at [Dreamforce 2016 "Exploring Machine Learning On Heroku"](https://www.salesforce.com/video/297129/)
 * [Template Gallery](https://predictionio.incubator.apache.org/gallery/template-gallery/) offers starting-points for many use-cases.
 
 🐸 **[How to deploy a template or custom engine](CUSTOM.md#engine)**
 
 ## Architecture
 
-This buildpack compiles the [Scala](http://www.scala-lang.org) source-code of a PredictionIO engine into a [Heroku app](https://devcenter.heroku.com/articles/how-heroku-works).
+This buildpack transforms the [Scala](http://www.scala-lang.org) source-code of a PredictionIO engine into a [Heroku app](https://devcenter.heroku.com/articles/how-heroku-works).
 
-![Diagram of Deployment to Heroku Common Runtime](https://marsikai.s3.amazonaws.com/predictionio-buildpack-arch-01.png)
+![Diagram of Deployment to Heroku Common Runtime](http://marsikai.s3.amazonaws.com/predictionio-buildpack-arch-01.png)
 
 The events data can be stored in:
 
@@ -38,9 +38,9 @@ This buildpack automatically trains the predictive model during [release phase](
 
 ### Additional Service Dependencies
 
-[Elasticsearch](https://predictionio.incubator.apache.org/system/) [ES] is not currently supported on Heroku, because it's implemented using the ES native Client Transport which requires ES to be deployed on the same private network as the Engine. Therefore, [Heroku Postgres](https://www.heroku.com/postgres) is the default storage repository. *There is work underway in the PredictionIO project to support ES by upgrading to ES 5.x and migrating to pure-REST interface.*
+Engines may require [Elasticsearch](https://predictionio.incubator.apache.org/system/) [ES] which is not currently supported on Heroku (see [this pull request](https://github.com/heroku/predictionio-buildpack/pull/16)). [Heroku Postgres](https://www.heroku.com/postgres) is the default storage repository, so this does not effect many engines. *There is [work underway](https://github.com/apache/incubator-predictionio/pull/336) in the PredictionIO project to support ES by upgrading to ES 5.x and migrating to pure-REST interface.*
 
 ### Stateless Builds
 
-PredictionIO 0.10.0-incubating requires a database connection during the build phase. While this works fine in the [Common Runtime](https://devcenter.heroku.com/articles/dyno-runtime), it is not compatible with [Private Databases](https://devcenter.heroku.com/articles/heroku-postgres-and-private-spaces). *There is work underway in the PredictionIO project to solve this problem by making `pio build` a stateless command.*
+PredictionIO 0.10.0-incubating requires a database connection during the build phase. While this works fine in the [Common Runtime](https://devcenter.heroku.com/articles/dyno-runtime), it is not compatible with [Private Databases](https://devcenter.heroku.com/articles/heroku-postgres-and-private-spaces). *There is [work underway](https://github.com/apache/incubator-predictionio/pull/328) in the PredictionIO project to solve this problem by making `pio build` a stateless command.*
 
