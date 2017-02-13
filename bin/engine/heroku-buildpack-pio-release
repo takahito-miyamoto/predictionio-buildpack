@@ -1,6 +1,31 @@
 #!/bin/bash
 
-# Fail immediately on non-zero exit code.
-set -e
+# Debug, echo every command
+set -x
 
-if [ "$PIO_TRAIN_ON_RELEASE" != "false" ]; then /app/bin/heroku-buildpack-pio-train; fi
+if [ "$PIO_TRAIN_ON_RELEASE" != "false" ]
+then
+  # Try to load data.
+  /app/bin/heroku-buildpack-pio-load-data
+  LOAD_DATA_STATUS=$?
+  # Handle exit code from data loader.
+  if [ $LOAD_DATA_STATUS -eq 3 ]
+  then
+    # Translate exit 3 from data loader to mean "exit ok".
+    # This is a soft error that continues the release, but 
+    # needs config vars & addons to be setup to retry.
+    echo 'Transient error loading data. Skipping train on release.'
+    exit
+  elif [ $LOAD_DATA_STATUS -gt 0 ]
+  then
+    # All other exits codes fail.
+    echo 'Error loading data.'
+    exit $LOAD_DATA_STATUS
+  fi
+
+  echo 'Running train on release…'
+  # Fail immediately on non-zero exit code.
+  set -e
+  # Once data is loaded, train the model.
+  /app/bin/heroku-buildpack-pio-train
+fi

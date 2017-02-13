@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Fail immediately on non-zero exit code.
+set -e
+# Fail immediately on non-zero exit code within a pipeline.
+set -o pipefail
+# Fail on undeclared variables.
+#set -u
+# Debug, echo every command
+set -x
+
+APP_PREFIX="/app/pio-engine"
+IMPORT_DATA_FILE="data/initial-events.json"
+IMPORT_DATA_FILEPATH="$APP_PREFIX/$IMPORT_DATA_FILE"
+
+# If it's declared, run the custom data loader script and then exit.
+if [ -n "$PIO_LOAD_DATA_SCRIPT" ]
+then
+  SCRIPT_PATH="$APP_PREFIX/$PIO_LOAD_DATA_SCRIPT"
+  if [ -f "$SCRIPT_PATH" ]
+  then
+    echo "Loading data using script '$PIO_LOAD_DATA_SCRIPT'."
+    eval "$SCRIPT_PATH"
+    exit $?
+  else
+    echo "Data loader script '$PIO_LOAD_DATA_SCRIPT' does not exist; tried '$SCRIPT_PATH'."
+    exit 1
+  fi
+fi
+
+if [ -f "$IMPORT_DATA_FILEPATH" ]
+then
+  echo "Found '$IMPORT_DATA_FILE'. Loading data…"
+
+  # Verify required env variables are set.
+  if [ -z "$DATABASE_URL" ]
+  then
+    echo "DATABASE_URL is required to load data. Skipping data load."
+    # Exit code 3, so that release phase can detect and exit cleanly, 
+    # to then retry after DB becomes available.
+    exit 3
+  fi
+  if [ -z "$PIO_EVENTSERVER_APP_NAME" ]
+  then
+    echo "PIO_EVENTSERVER_APP_NAME is required to load data. Skipping data load."
+    # Exit code 3, so that release phase can detect and exit cleanly, 
+    # to then retry after app name is set.
+    exit 3
+  fi
+
+  # Only setup the Eventserver app once
+  set +e # allow non-zero exit codes
+  echo "Checking if '$PIO_EVENTSERVER_APP_NAME' already exists in the eventserver."
+  pio app show $PIO_EVENTSERVER_APP_NAME
+  if [ $? -ne 0 ]
+  then
+    set -e
+
+    if [ -z "$PIO_EVENTSERVER_ACCESS_KEY" ]
+    then
+      echo "PIO_EVENTSERVER_ACCESS_KEY is required to initialize the eventserver. Skipping data load."
+      # Exit code 3, so that release phase can detect and exit cleanly, 
+      # to then retry after a key is set.
+      exit 3
+    fi
+    
+    echo "Creating '$PIO_EVENTSERVER_APP_NAME' in the eventserver"
+    pio app new --access-key $PIO_EVENTSERVER_ACCESS_KEY $PIO_EVENTSERVER_APP_NAME | tee app-new-out.log
+
+    # Capture the new App ID
+    EVENTSERVER_APP_ID=`cat app-new-out.log | ruby -E utf-8:utf-8 -e 'STDOUT << /id:\s+(\w+)/i.match(STDIN.read)[1]'`
+
+    echo "Importing events for training to App ID $EVENTSERVER_APP_ID"
+    eval "pio import --appid $EVENTSERVER_APP_ID --input $IMPORT_DATA_FILEPATH -- --driver-class-path /app/lib/postgresql_jdbc.jar"
+  else
+    set -e
+    echo "Found '$PIO_EVENTSERVER_APP_NAME' in the eventserver. Skipping initialization and data load."
+  fi
+fi
