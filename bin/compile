@@ -139,7 +139,14 @@ then
   # Move to dyno-compatible prefix for `pio build`
   mv $BUILD_DIR/* $app_prefix
   cd $app_prefix
-  $dist_name/bin/pio build --verbose | indent
+  #
+  if [ -n "${PIO_VERBOSE:-}" ]
+  then
+    $dist_name/bin/pio build --verbose | indent
+  else
+    echo 'Quietly logging. (Set `PIO_VERBOSE=true` for detailed build log.)' | indent
+    $dist_name/bin/pio build | indent
+  fi
 
   topic "Clean-up build artifacts"
   # Try to keep slug below 300MB limit.

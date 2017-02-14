@@ -273,6 +273,8 @@ $ cat best.json
 
 Engine deployments honor the following config vars:
 
+* `PIO_VERBOSE`
+  * set `PIO_VERBOSE=true` for detailed build logs
 * `PIO_BUILD_SPARK_VERSION`
   * default `1.6.2`
   * supports `1.4.1`, `1.5.1`, `1.6.1`, & `1.6.2`
