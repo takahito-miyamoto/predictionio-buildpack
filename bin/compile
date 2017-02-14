@@ -168,6 +168,8 @@ then
   fi
 
   topic "Moving engine's bin/ & conf/ into place"
+  # This supports composition with other buildpacks which might expect 
+  # bin/ & conf/ directories to stay in app/.
   mkdir -p $BUILD_DIR/$app_namespace/bin
   mv $BUILD_DIR/$app_namespace/bin $BUILD_DIR/
   mkdir -p $BUILD_DIR/$app_namespace/conf
