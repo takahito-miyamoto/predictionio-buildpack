@@ -159,19 +159,21 @@ Modify this file to make sure the `appName` parameter matches the app record [cr
 
 For example engines containing `data/initial-events.json`, this data will automatically be imported into the eventserver before training.
 
-For production engines, do one of the following:
+⚠️  *If `data/initial-events.json` already exists in the engine, then skip to [Deploy to Heroku](#deploy-to-heroku).*
 
-* **Auto-load eventserver data**
-  * create a [batch input file](http://predictionio.incubator.apache.org/datacollection/batchimport/) `data/initial-events.json`
-  * this file's data is imported automatically the first time the engine is deployed to Heroku
-* **Employ a custom data loader script**
-  * set the `PIO_LOAD_DATA_SCRIPT` environment variable to a custom executable script
-  * `heroku config:set PIO_LOAD_DATA_SCRIPT=bin/amazing-custom-importer`
-  * the script is run automatically before training, everytime the engine is deployed to Heroku
-* **Use an existing data source**
-  * implement the engine's `DataSource.scala` to use a pre-existing data store
-  * no specific data loading step is required, so ensure `data/initial-events.json` is deleted from the engine.
+For production engines, use one of the following:
 
+* **Auto-load JSON data to eventserver**
+  * import event data automatically, the first time the engine is deployed to Heroku, before training
+  * create the [batch input file](http://predictionio.incubator.apache.org/datacollection/batchimport/) `data/initial-events.json`
+* **Custom data loader script**
+  * executes automatically, everytime the engine is deployed to Heroku, before training
+  * commit an executable script to `bin/`
+  * set the `PIO_LOAD_DATA_SCRIPT` environment variable to the name of the script in `bin/` 
+  * `heroku config:set PIO_LOAD_DATA_SCRIPT=amazing-custom-importer`
+* **Custom, pre-existing data source**
+  * implement the engine's `DataSource.scala` to use a pre-existing data store, instead of the eventserver
+  * probably does not need automatic data loading by the PredictionIO engine, so ensure `data/initial-events.json` is not-present, deleted from the engine.
 
 ### Deploy to Heroku
 
