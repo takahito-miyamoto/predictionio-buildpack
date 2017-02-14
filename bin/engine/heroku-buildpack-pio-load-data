@@ -5,9 +5,9 @@ set -e
 # Fail immediately on non-zero exit code within a pipeline.
 set -o pipefail
 # Fail on undeclared variables.
-#set -u
+set -u
 # Debug, echo every command
-set -x
+#set -x
 
 APP_PREFIX="/app/pio-engine"
 BIN_PATH="/app/bin" # because compile script moves bin/ up to app/

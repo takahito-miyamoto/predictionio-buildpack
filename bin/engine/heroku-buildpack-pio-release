@@ -1,9 +1,15 @@
 #!/bin/bash
 
+# Fail immediately on non-zero exit code.
+set -e
+# Fail immediately on non-zero exit code within a pipeline.
+set -o pipefail
+# Fail on undeclared variables.
+set -u
 # Debug, echo every command
-set -x
+#set -x
 
-if [ "$PIO_TRAIN_ON_RELEASE" != "false" ]
+if [ "${PIO_TRAIN_ON_RELEASE-true}" != "false" ]
 then
   # Try to load data.
   /app/bin/heroku-buildpack-pio-load-data
