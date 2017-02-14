@@ -15,7 +15,7 @@ IMPORT_DATA_FILE="data/initial-events.json"
 IMPORT_DATA_FILEPATH="$APP_PREFIX/$IMPORT_DATA_FILE"
 
 # If it's declared, run the custom data loader script and then exit.
-if [ -n "$PIO_LOAD_DATA_SCRIPT" ]
+if [ -n "${PIO_LOAD_DATA_SCRIPT:-}" ]
 then
   SCRIPT_PATH="$BIN_PATH/$PIO_LOAD_DATA_SCRIPT"
   if [ -f "$SCRIPT_PATH" ]
