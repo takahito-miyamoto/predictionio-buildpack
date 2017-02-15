@@ -109,8 +109,6 @@ To enable, either:
 
 ⚠️ Note that with HDFS on Heroku, all filesystem path references must be absolute from `/` root, not relative or nested in User ID directory.
 
-* This returns an access key for the app; use it below in place of `$PIO_APP_ACCESS_KEY`.
-
 ### Configure the Heroku app to use the eventserver
 
 ⚠️ **Not required for engines that exclusively use a custom data source.**
