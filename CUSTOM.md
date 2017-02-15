@@ -134,7 +134,7 @@ heroku config:set \
 
 ⚠️ **Not required for engines that exclusively use a custom data source.**
 
-Modify this file to make sure the `appName` parameter matches the app record [created in the eventserver](#generate-an-app-record-on-the-eventserver).
+Modify this file to make sure the `appName` parameter matches the [value set for `PIO_EVENTSERVER_APP_NAME`](#configure-the-heroku-app-to-use-the-eventserver).
 
 ```json
   "datasource": {
