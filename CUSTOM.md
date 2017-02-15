@@ -20,7 +20,6 @@ Please, follow the steps in the order documented.
   1. [Create an engine](#create-an-engine)
     * [Optional Persistent Filesystem](#optional-persistent-filesystem)
   1. [Create a Heroku app for the engine](#create-a-heroku-app-for-the-engine)
-  1. [Create a PredictionIO app in the eventserver](#create-a-predictionio-app-in-the-eventserver)
   1. [Configure the Heroku app to use the eventserver](#configure-the-heroku-app-to-use-the-eventserver)
   1. [Update `engine.json`](#update-engine-json)
   1. [Import data](#import-data)
@@ -110,14 +109,6 @@ To enable, either:
 
 ⚠️ Note that with HDFS on Heroku, all filesystem path references must be absolute from `/` root, not relative or nested in User ID directory.
 
-### Create a PredictionIO app in the eventserver
-
-⚠️ **Not required for engines that exclusively use a custom data source.**
-
-```bash
-heroku run "pio app new $PIO_APP_NAME" -a $EVENTSERVER_NAME
-```
-
 * This returns an access key for the app; use it below in place of `$PIO_APP_ACCESS_KEY`.
 
 ### Configure the Heroku app to use the eventserver
@@ -128,11 +119,15 @@ Replace the Postgres ID & eventserver config values with those from above:
 
 ```bash
 heroku addons:attach $POSTGRES_ADDON_ID
+
+# Generate a random key.
+export ACCESS_KEY="$RANDOM-$RANDOM-$RANDOM-$RANDOM"
+
 heroku config:set \
   PIO_EVENTSERVER_HOSTNAME=$EVENTSERVER_NAME.herokuapp.com \
   PIO_EVENTSERVER_PORT=80 \
-  PIO_EVENTSERVER_ACCESS_KEY=$PIO_APP_ACCESS_KEY \
-  PIO_EVENTSERVER_APP_NAME=$PIO_APP_NAME
+  PIO_EVENTSERVER_ACCESS_KEY=$ACCESS_KEY \
+  PIO_EVENTSERVER_APP_NAME=$PIO_APP_NAME # must match `appName` in engine.json
 ```
 
 * See [environment variables](#environment-variables) for config details.
