@@ -280,6 +280,13 @@ Engine deployments honor the following config vars:
 * `PIO_BUILD_SPARK_VERSION`
   * default `1.6.2`
   * supports `1.4.1`, `1.5.1`, `1.6.1`, & `1.6.2`
+* `PREDICTIONIO_DIST_URL`
+  * defaults to a PredictionIO distribution version based on `pio.version.min` in **template.json**
+  * use a custom distribution by setting its fetch URL:
+
+    ```bash
+    heroku config:set PREDICTIONIO_DIST_URL=https://marsikai.s3.amazonaws.com/PredictionIO-0.10.0-incubating.tar.gz
+    ```
 * `PIO_OPTS`
   * options passed as `pio $opts`
   * see: [`pio` command reference](https://predictionio.incubator.apache.org/cli/)

@@ -106,12 +106,12 @@ custom_pio_env="$BUILD_DIR/config/pio-env.sh"
 target_pio_env="${dist_dir}/conf/pio-env.sh"
 
 topic "Fetch distribution of PredictionIO"
-curl -o "${dist_name}.tar.gz" -S "$url"
+curl -s -L "$url" > "${dist_name}.tar.gz"
 mkdir -p "$dist_dir"
 tar -xz -f "${dist_name}.tar.gz" -C "$dist_dir" --strip-components=1 | indent
 
 topic "Fetch distribution of Spark"
-curl -o "spark-hadoop.tar.gz" -S "https://marsikai.s3.amazonaws.com/${SPARK_VERSION}.tar.gz"
+curl -s -L "https://marsikai.s3.amazonaws.com/${SPARK_VERSION}.tar.gz" > "spark-hadoop.tar.gz"
 mkdir -p "$dist_dir/vendors/spark-hadoop"
 tar -xz -f "spark-hadoop.tar.gz" -C "$dist_dir/vendors/spark-hadoop" --strip-components=1  | indent
 
