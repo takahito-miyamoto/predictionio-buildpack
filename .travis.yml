@@ -1,0 +1,5 @@
+sudo: required
+services:
+  - docker
+script:
+  - docker-compose -p pio -f test/docker-compose.yml run testrunner

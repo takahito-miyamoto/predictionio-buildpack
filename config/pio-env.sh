@@ -86,7 +86,12 @@ else
     # extract the path (if any)
     path="`echo $url | grep / | cut -d/ -f2-`"
 
-    PIO_STORAGE_SOURCES_PGSQL_URL=jdbc:postgresql://$hostport/$path?sslmode=require
+    if [ "$PIO_POSTGRES_OPTIONAL_SSL" = "true" ]
+    then
+        PIO_STORAGE_SOURCES_PGSQL_URL=jdbc:postgresql://$hostport/$path
+    else
+        PIO_STORAGE_SOURCES_PGSQL_URL=jdbc:postgresql://$hostport/$path?sslmode=require
+    fi
     PIO_STORAGE_SOURCES_PGSQL_USERNAME=$user
     PIO_STORAGE_SOURCES_PGSQL_PASSWORD=$pass
 fi

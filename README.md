@@ -44,3 +44,12 @@ Engines may require [Elasticsearch](https://predictionio.incubator.apache.org/sy
 
 PredictionIO 0.10.0-incubating requires a database connection during the build phase. While this works fine in the [Common Runtime](https://devcenter.heroku.com/articles/dyno-runtime), it is not compatible with [Private Databases](https://devcenter.heroku.com/articles/heroku-postgres-and-private-spaces). *There is [work underway](https://github.com/apache/incubator-predictionio/pull/328) in the PredictionIO project to solve this problem by making `pio build` a stateless command.*
 
+## Testing [![Build Status](https://travis-ci.org/heroku/predictionio-buildpack.svg?branch=master)](https://travis-ci.org/heroku/predictionio-buildpack)
+
+[Tests](test/) are composed and run using [heroku-buildpack-testrunner](https://github.com/heroku/heroku-buildpack-testrunner). Engine test cases are staged in the [`test/fixtures/`](test/fixtures/).
+
+Setup [testrunner with Docker](https://github.com/heroku/heroku-buildpack-testrunner#docker-usage), then run tests with:
+
+```bash
+docker-compose -p pio -f test/docker-compose.yml run testrunner
+```

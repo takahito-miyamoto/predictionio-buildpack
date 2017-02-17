@@ -268,11 +268,22 @@ $ cat best.json
 
 Engine deployments honor the following config vars:
 
+* `DATABASE_URL` & `PIO_POSTGRES_OPTIONAL_SSL`
+  * automatically set by [Heroku PostgreSQL](https://elements.heroku.com/addons/heroku-postgresql)
+  * defaults to `postgres://pio:pio@locahost:5432/pio`
+  * when testing locally, set `PIO_POSTGRES_OPTIONAL_SSL=true` to avoid **The server does not support SSL** errors
 * `PIO_VERBOSE`
   * set `PIO_VERBOSE=true` for detailed build logs
 * `PIO_BUILD_SPARK_VERSION`
   * default `1.6.2`
   * supports `1.4.1`, `1.5.1`, `1.6.1`, & `1.6.2`
+* `PREDICTIONIO_DIST_URL`
+  * defaults to a PredictionIO distribution version based on `pio.version.min` in **template.json**
+  * use a custom distribution by setting its fetch URL:
+
+    ```bash
+    heroku config:set PREDICTIONIO_DIST_URL=https://marsikai.s3.amazonaws.com/PredictionIO-0.10.0-incubating.tar.gz
+    ```
 * `PIO_OPTS`
   * options passed as `pio $opts`
   * see: [`pio` command reference](https://predictionio.incubator.apache.org/cli/)
