@@ -42,7 +42,7 @@ Engines may require [Elasticsearch](https://predictionio.incubator.apache.org/sy
 
 ### Stateless Builds
 
-PredictionIO 0.10.0-incubating requires a database connection during the build phase. While this works fine in the [Common Runtime](https://devcenter.heroku.com/articles/dyno-runtime), it is not compatible with [Private Databases](https://devcenter.heroku.com/articles/heroku-postgres-and-private-spaces). *There is [work underway](https://github.com/apache/incubator-predictionio/pull/328) in the PredictionIO project to solve this problem by making `pio build` a stateless command.*
+PredictionIO 0.10.0-incubating requires a database connection during the build phase. While this works fine in the [Common Runtime](https://devcenter.heroku.com/articles/dyno-runtime), it is not compatible with [Private Databases](https://devcenter.heroku.com/articles/heroku-postgres-and-private-spaces). *There is [work underway](https://github.com/apache/incubator-predictionio/pull/328) in the PredictionIO project to solve this problem by making `pio build` a stateless command. This upcoming feature is verified in the [compile with 0.11.0-SNAPSHOT test](https://github.com/heroku/predictionio-buildpack/blob/master/test/compile_test.sh).*
 
 ## Testing [![Build Status](https://travis-ci.org/heroku/predictionio-buildpack.svg?branch=master)](https://travis-ci.org/heroku/predictionio-buildpack)
 
