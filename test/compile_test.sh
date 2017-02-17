@@ -32,7 +32,7 @@ test_engine_classification_4_0_0() {
 
   assertEquals "\`pio status\` exit code was ${RETURN} instead of 0" "0" "${RETURN}"
   assertContains "PredictionIO 0.11.0-SNAPSHOT" "$(cat ${STD_OUT})"
-  assertContains "Apache Spark 1.5.1" "$(cat ${STD_OUT})"
+  assertContains "Apache Spark 1.6.2" "$(cat ${STD_OUT})"
   assertContains "Meta Data Backend (Source: PGSQL)" "$(cat ${STD_OUT})"
   assertContains "Model Data Backend (Source: PGSQL)" "$(cat ${STD_OUT})"
   assertContains "Event Data Backend (Source: PGSQL)" "$(cat ${STD_OUT})"
