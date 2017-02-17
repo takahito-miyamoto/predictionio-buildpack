@@ -275,6 +275,10 @@ $ cat best.json
 
 Engine deployments honor the following config vars:
 
+* `DATABASE_URL` & `PIO_POSTGRES_OPTIONAL_SSL`
+  * automatically set by [Heroku PostgreSQL](https://elements.heroku.com/addons/heroku-postgresql)
+  * defaults to `postgres://pio:pio@locahost:5432/pio`
+  * when testing locally, set `PIO_POSTGRES_OPTIONAL_SSL=true` to avoid **The server does not support SSL** errors
 * `PIO_VERBOSE`
   * set `PIO_VERBOSE=true` for detailed build logs
 * `PIO_BUILD_SPARK_VERSION`

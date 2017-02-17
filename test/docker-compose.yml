@@ -1,0 +1,18 @@
+version: "2"
+services:
+  postgres:
+    image: postgres:9
+    environment:
+      POSTGRES_USER: pio
+      POSTGRES_PASSWORD: pio
+      POSTGRES_INITDB_ARGS: --encoding=UTF8
+  testrunner:
+    image: heroku/buildpack-testrunner:latest
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://pio:pio@postgres:5432/pio
+      PIO_POSTGRES_OPTIONAL_SSL: "true"
+    volumes:
+      - ~/magic_curl_cache:/tmp/magic_curl_cache
+      - ../:/app/buildpack:ro

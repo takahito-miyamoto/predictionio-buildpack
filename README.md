@@ -51,7 +51,5 @@ PredictionIO 0.10.0-incubating requires a database connection during the build p
 Setup [testrunner with Docker](https://github.com/heroku/heroku-buildpack-testrunner#docker-usage), then run tests with:
 
 ```bash
-docker run -it \
-  -v path/to/this-buildpack:/app/buildpack:ro
-  -v ~/magic_curl_cache:/tmp/magic_curl_cache heroku/buildpack-testrunner
+docker-compose -p pio -f test/docker-compose.yml run testrunner
 ```
