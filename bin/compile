@@ -164,7 +164,7 @@ then
   then
     mv $BUILD_DIR/$app_namespace/Procfile* $BUILD_DIR
   else
-    mv "${BP_DIR}/Procfile-engine" "${BUILD_DIR}/Procfile"
+    cp "${BP_DIR}/Procfile-engine" "${BUILD_DIR}/Procfile"
   fi
 
   topic "Moving engine's bin/ & conf/ into place"

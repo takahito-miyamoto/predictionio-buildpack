@@ -53,6 +53,7 @@ tearDown()
 {
   beforeTearDown
   rm -rf ${OUTPUT_DIR}
+  rm -rf `find /app -mindepth 1 -maxdepth 1 | grep -v "/app/buildpack"`
   afterTearDown
 }
 
