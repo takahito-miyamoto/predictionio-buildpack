@@ -7,12 +7,6 @@
     "spark",
     "sparkml"
   ],
-  "env": {
-    "PIO_EVENTSERVER_ACCESS_KEY": {
-      "description": "A unique, auto-generated secret key for the PIO Eventserver API",
-      "generator": "secret"
-    }
-  },
   "addons": [
     "heroku-postgresql"
   ],

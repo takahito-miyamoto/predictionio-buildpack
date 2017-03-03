@@ -3,9 +3,20 @@
 # Fail immediately on non-zero exit code.
 set -e
 
+if [ "$PIO_ENABLE_FEEDBACK" = "true" ]
+then
+  if [ -n "$PIO_EVENTSERVER_HOSTNAME" -a -n "$PIO_EVENTSERVER_ACCESS_KEY" -a -n "$PIO_EVENTSERVER_APP_NAME" ]
+  then
+    FEEDBACK_OPTS="--feedback --event-server-ip $PIO_EVENTSERVER_HOSTNAME --event-server-port ${PIO_EVENTSERVER_PORT:-443} --accesskey $PIO_EVENTSERVER_ACCESS_KEY"
+  else
+    echo "PredictionIO feedback is enabled, but missing required config: PIO_EVENTSERVER_APP_NAME=${PIO_EVENTSERVER_APP_NAME:-(missing)} PIO_EVENTSERVER_HOSTNAME=${PIO_EVENTSERVER_HOSTNAME:-(missing)} PIO_EVENTSERVER_ACCESS_KEY=${PIO_EVENTSERVER_ACCESS_KEY:-(missing)}"
+    exit 1
+  fi
+fi
+
 if [ -e "/app/.heroku/.is_old_predictionio" ]
 then
-  eval "cd pio-engine/ && pio deploy --port $PORT --event-server-ip $PIO_EVENTSERVER_HOSTNAME --event-server-port $PIO_EVENTSERVER_PORT --accesskey $PIO_EVENTSERVER_ACCESS_KEY ${PIO_OPTS:-} -- --driver-class-path /app/lib/postgresql_jdbc.jar ${PIO_SPARK_OPTS:-}"
+  eval "cd pio-engine/ && pio deploy --port $PORT ${PIO_OPTS:-} ${FEEDBACK_OPTS:-} -- --driver-class-path /app/lib/postgresql_jdbc.jar ${PIO_SPARK_OPTS:-}"
 else
-  eval "cd pio-engine/ && pio deploy --port $PORT --event-server-ip $PIO_EVENTSERVER_HOSTNAME --event-server-port $PIO_EVENTSERVER_PORT --accesskey $PIO_EVENTSERVER_ACCESS_KEY ${PIO_OPTS:-} -- --packages org.apache.hadoop:hadoop-aws:2.7.2 ${PIO_SPARK_OPTS:-}"
+  eval "cd pio-engine/ && pio deploy --port $PORT ${PIO_OPTS:-} ${FEEDBACK_OPTS:-} -- --packages org.apache.hadoop:hadoop-aws:2.7.2 ${PIO_SPARK_OPTS:-}"
 fi
