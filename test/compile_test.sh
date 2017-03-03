@@ -31,7 +31,7 @@ test_compile_with_defaults() {
 
   assertEquals "\`pio status\` exit code was ${RETURN} instead of 0" "0" "${RETURN}"
   assertContains "PredictionIO 0.10.0-incubating" "$(cat ${STD_OUT})"
-  assertContains "Apache Spark 1.6.2" "$(cat ${STD_OUT})"
+  assertContains "Apache Spark 1.6.3" "$(cat ${STD_OUT})"
   assertContains "Meta Data Backend (Source: PGSQL)" "$(cat ${STD_OUT})"
   assertContains "Model Data Backend (Source: PGSQL)" "$(cat ${STD_OUT})"
   assertContains "Event Data Backend (Source: PGSQL)" "$(cat ${STD_OUT})"
@@ -76,7 +76,7 @@ test_compile_with_predictionio_0_11_0_SNAPSHOT() {
 
   assertEquals "\`pio status\` exit code was ${RETURN} instead of 0" "0" "${RETURN}"
   assertContains "PredictionIO 0.11.0-SNAPSHOT" "$(cat ${STD_OUT})"
-  assertContains "Apache Spark 1.6.2" "$(cat ${STD_OUT})"
+  assertContains "Apache Spark 1.6.3" "$(cat ${STD_OUT})"
   assertContains "Meta Data Backend (Source: PGSQL)" "$(cat ${STD_OUT})"
   assertContains "Model Data Backend (Source: PGSQL)" "$(cat ${STD_OUT})"
   assertContains "Event Data Backend (Source: PGSQL)" "$(cat ${STD_OUT})"
