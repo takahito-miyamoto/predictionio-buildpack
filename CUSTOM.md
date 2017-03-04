@@ -275,8 +275,8 @@ Engine deployments honor the following config vars:
 * `PIO_VERBOSE`
   * set `PIO_VERBOSE=true` for detailed build logs
 * `PIO_BUILD_SPARK_VERSION`
-  * default `1.6.2`
-  * supports `1.4.1`, `1.5.1`, `1.6.1`, & `1.6.2`
+  * default `1.6.3`
+  * supports `1.4.1`, `1.5.1`, `1.6.1`, `1.6.2`, & `1.6.3`
 * `PREDICTIONIO_DIST_URL`
   * defaults to a PredictionIO distribution version based on `pio.version.min` in **template.json**
   * use a custom distribution by setting its fetch URL:
