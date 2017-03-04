@@ -65,6 +65,7 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
 export_env_dir "$ENV_DIR" '^PREDICTIONIO_DIST_URL$'
 export_env_dir "$ENV_DIR" '^PIO_BUILD_SPARK_VERSION$'
 SPARK_VERSION="spark-${PIO_BUILD_SPARK_VERSION:-1.6.3}-bin-hadoop2.6"
+HADOOP_AWS_DRIVER=https://marsikai.s3.amazonaws.com/hadoop-aws-2.7.3.jar
 POSTGRESQL_DRIVER=https://marsikai.s3.amazonaws.com/postgresql-9.4.1209.jar
 
 if [ "${PREDICTIONIO_DIST_URL:-}" ]
@@ -181,6 +182,13 @@ then
 
 else
   echo 'No engine to build. (`engine.json` does not exist.)' | indent
+fi
+
+if [ "$HADOOP_AWS_DRIVER" ]
+then
+  topic "Install Hadoop-AWS driver"
+  mkdir -p "${BUILD_DIR}/lib"
+  curl -s -L "$HADOOP_AWS_DRIVER" > "${BUILD_DIR}/lib/hadoop-aws.jar"
 fi
 
 if [ "$POSTGRESQL_DRIVER" ]
