@@ -1,0 +1,156 @@
+#!/bin/sh
+. ${BUILDPACK_HOME}/test/helper.sh
+
+pioEngineDir=""
+pioSpy=""
+
+# Create a spy script where the executable is expected
+# to assert how it is called.
+afterSetUp() {
+  PATH=./:$PATH
+  pioEngineDir="$BUILD_DIR/pio-engine"
+  pioSpy="${pioEngineDir}/pio"
+  mkdir -p "${pioEngineDir}"
+  cat > $pioSpy <<'HEREDOC'
+#!/bin/sh
+set -e
+echo $@
+HEREDOC
+  chmod +x $pioSpy
+
+  cd $BUILD_DIR
+  unset PORT
+  unset PIO_OPTS
+  unset PIO_SPARK_OPTS
+  unset PIO_ENABLE_FEEDBACK
+  unset PIO_EVENTSERVER_HOSTNAME
+  unset PIO_EVENTSERVER_ACCESS_KEY
+  unset PIO_EVENTSERVER_APP_NAME
+}
+
+beforeTearDown() {
+  cd $BUILDPACK_HOME
+  rm $pioSpy
+}
+
+test_web_params()
+{
+  export PORT=853211
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 0 ${rtrn}
+  assertEquals \
+    "deploy --port 853211 -- --packages org.apache.hadoop:hadoop-aws:2.7.2" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
+test_web_params_missing_port()
+{
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 1 ${rtrn}
+  assertEquals "" "$(cat ${STD_OUT})"
+  assertContains \
+    "requires environment variable PORT" \
+    "$(cat ${STD_ERR})"
+}
+
+test_web_params_with_pio_opts()
+{
+  export PORT=853211
+  export PIO_OPTS='--variant best.json'
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 0 ${rtrn}
+  assertEquals \
+    "deploy --port 853211 --variant best.json -- --packages org.apache.hadoop:hadoop-aws:2.7.2" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
+test_web_params_with_spark_opts()
+{
+  export PORT=853211
+  export PIO_SPARK_OPTS='--master spark://localhost'
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 0 ${rtrn}
+  assertEquals \
+    "deploy --port 853211 -- --packages org.apache.hadoop:hadoop-aws:2.7.2 --master spark://localhost" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
+test_web_params_for_old_predictionio()
+{
+  export PORT=853211
+  mkdir -p .heroku
+  touch .heroku/.is_old_predictionio
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 0 ${rtrn}
+  assertEquals \
+    "deploy --port 853211 -- --driver-class-path /app/lib/postgresql_jdbc.jar" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
+test_web_params_for_old_predictionio_with_pio_opts()
+{
+  export PORT=853211
+  export PIO_OPTS='--variant best.json'
+  mkdir -p .heroku
+  touch .heroku/.is_old_predictionio
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 0 ${rtrn}
+  assertEquals \
+    "deploy --port 853211 --variant best.json -- --driver-class-path /app/lib/postgresql_jdbc.jar" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
+test_web_params_for_old_predictionio_with_spark_opts()
+{
+  export PORT=853211
+  export PIO_SPARK_OPTS='--master spark://localhost'
+  mkdir -p .heroku
+  touch .heroku/.is_old_predictionio
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 0 ${rtrn}
+  assertEquals \
+    "deploy --port 853211 -- --driver-class-path /app/lib/postgresql_jdbc.jar --master spark://localhost" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
+test_web_params_with_feedback_enabled()
+{
+  export PORT=853211
+  export PIO_ENABLE_FEEDBACK=true
+  export PIO_EVENTSERVER_HOSTNAME=example.herokuapp.com
+  export PIO_EVENTSERVER_ACCESS_KEY=XXXXX
+  export PIO_EVENTSERVER_APP_NAME=sushi
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 0 ${rtrn}
+  assertEquals \
+    "deploy --port 853211 --feedback --event-server-ip example.herokuapp.com --event-server-port 443 --accesskey XXXXX -- --packages org.apache.hadoop:hadoop-aws:2.7.2" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
+test_web_params_with_feedback_missing_params()
+{
+  export PORT=853211
+  export PIO_ENABLE_FEEDBACK=true
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 1 ${rtrn}
+  assertEquals "" "$(cat ${STD_OUT})"
+  assertContains \
+    "missing required config: PIO_EVENTSERVER_APP_NAME=(missing) PIO_EVENTSERVER_HOSTNAME=(missing) PIO_EVENTSERVER_ACCESS_KEY=(missing)" \
+    "$(cat ${STD_ERR})"
+}
