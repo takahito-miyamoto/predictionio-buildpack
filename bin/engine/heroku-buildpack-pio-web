@@ -9,6 +9,7 @@ then
   exit 1
 fi
 
+# Optionally enable PredictionIO feedback loop.
 if [ "$PIO_ENABLE_FEEDBACK" = "true" ]
 then
   if [ -n "$PIO_EVENTSERVER_HOSTNAME" -a -n "$PIO_EVENTSERVER_ACCESS_KEY" -a -n "$PIO_EVENTSERVER_APP_NAME" ]
@@ -20,9 +21,18 @@ then
   fi
 fi
 
-if [ -e ".heroku/.is_old_predictionio" ]
+# Optionally enable S3 HDFS support.
+if [ -n "$PIO_S3_BUCKET_NAME" -a -n "$PIO_S3_AWS_ACCESS_KEY_ID" -a -n "$PIO_S3_AWS_SECRET_ACCESS_KEY" ]
+then
+  # Installing a package at runtime is a total hack;
+  # anticipating that Spark 2+ & Hadoop 2.7+ will fix.
+  S3_SUPPORT_OPTS="--packages org.apache.hadoop:hadoop-aws:2.7.2"
+fi
+
+# Start the web process; pre-Apache (v0.9) vs Apache (>= v0.10) compatibility.
+if [ -e "/app/.heroku/.is_old_predictionio" ]
 then
   eval "cd pio-engine/ && pio deploy --port $PORT ${PIO_OPTS:-} ${FEEDBACK_OPTS:-} -- --driver-class-path /app/lib/postgresql_jdbc.jar ${PIO_SPARK_OPTS:-}"
 else
-  eval "cd pio-engine/ && pio deploy --port $PORT ${PIO_OPTS:-} ${FEEDBACK_OPTS:-} -- --packages org.apache.hadoop:hadoop-aws:2.7.2 ${PIO_SPARK_OPTS:-}"
+  eval "cd pio-engine/ && pio deploy --port $PORT ${PIO_OPTS:-} ${FEEDBACK_OPTS:-} -- ${PIO_SPARK_OPTS:-} ${S3_SUPPORT_OPTS:-}"
 fi
