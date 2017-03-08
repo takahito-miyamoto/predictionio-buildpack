@@ -105,7 +105,10 @@ To enable, either:
   ```bash
   heroku addons:create bucketeer --as PIO_S3
   ```
-* bring your own [s3 bucket](https://aws.amazon.com/s3/) by manually setting the [`PIO_S3_*` config vars](#environment-variables).
+* bring your own [s3 bucket](https://aws.amazon.com/s3/) by manually setting the [config vars](#environment-variables)
+  * `PIO_S3_BUCKET_NAME`
+  * `PIO_S3_AWS_ACCESS_KEY_ID`
+  * `PIO_S3_AWS_SECRET_ACCESS_KEY`
 
 ⚠️ Note that with HDFS on Heroku, all filesystem path references must be absolute from `/` root, not relative or nested in User ID directory.
 
@@ -128,7 +131,9 @@ heroku config:set PIO_EVENTSERVER_APP_NAME=$PIO_APP_NAME
 
 ⚠️ **Not required for engines that exclusively use a custom data source.**
 
-Modify this file to make sure the `appName` parameter matches the [value set for `PIO_EVENTSERVER_APP_NAME`](#configure-the-heroku-app-to-use-the-eventserver).
+⭐️  *A better alternative is to delete the `"appName"` param from `engine.json`, and then use the environment variable value `sys.env("PIO_EVENTSERVER_APP_NAME")` throughout the engine source code.*
+
+Modify `engine.json` to make sure the `appName` parameter matches the [value set for `PIO_EVENTSERVER_APP_NAME`](#configure-the-heroku-app-to-use-the-eventserver).
 
 ```json
   "datasource": {
@@ -137,8 +142,6 @@ Modify this file to make sure the `appName` parameter matches the [value set for
     }
   }
 ```
-
-* If the `appName` param is missing, you may need to [upgrade the template](https://predictionio.incubator.apache.org/resources/upgrade/).
 
 ### Import data
 
