@@ -21,6 +21,9 @@ HEREDOC
   cd $BUILD_DIR
   unset PIO_OPTS
   unset PIO_TRAIN_SPARK_OPTS
+  unset PIO_S3_BUCKET_NAME
+  unset PIO_S3_AWS_ACCESS_KEY_ID
+  unset PIO_S3_AWS_SECRET_ACCESS_KEY
 }
 
 beforeTearDown() {
@@ -33,7 +36,33 @@ test_train_params()
   capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-train
   assertEquals 0 ${rtrn}
   assertEquals \
+    "train --" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
+test_train_params_with_s3_bucket()
+{
+  export PIO_S3_BUCKET_NAME=example-bucket
+  export PIO_S3_AWS_ACCESS_KEY_ID=YYYYY
+  export PIO_S3_AWS_SECRET_ACCESS_KEY=ZZZZZ
+
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-train
+  assertEquals 0 ${rtrn}
+  assertEquals \
     "train -- --packages org.apache.hadoop:hadoop-aws:2.7.2" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
+test_train_params_with_s3_bucket_missing_key()
+{
+  export PIO_S3_BUCKET_NAME=example-bucket
+
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-train
+  assertEquals 0 ${rtrn}
+  assertEquals \
+    "train --" \
     "$(cat ${STD_OUT})"
   assertEquals "" "$(cat ${STD_ERR})"
 }
@@ -45,7 +74,7 @@ test_train_params_with_pio_opts()
   capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-train
   assertEquals 0 ${rtrn}
   assertEquals \
-    "train --variant best.json -- --packages org.apache.hadoop:hadoop-aws:2.7.2" \
+    "train --variant best.json --" \
     "$(cat ${STD_OUT})"
   assertEquals "" "$(cat ${STD_ERR})"
 }
@@ -57,7 +86,7 @@ test_train_params_with_spark_opts()
   capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-train
   assertEquals 0 ${rtrn}
   assertEquals \
-    "train -- --packages org.apache.hadoop:hadoop-aws:2.7.2 --master spark://localhost" \
+    "train -- --master spark://localhost" \
     "$(cat ${STD_OUT})"
   assertEquals "" "$(cat ${STD_ERR})"
 }
