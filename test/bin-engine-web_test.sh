@@ -26,6 +26,9 @@ HEREDOC
   unset PIO_EVENTSERVER_HOSTNAME
   unset PIO_EVENTSERVER_ACCESS_KEY
   unset PIO_EVENTSERVER_APP_NAME
+  unset PIO_S3_BUCKET_NAME
+  unset PIO_S3_AWS_ACCESS_KEY_ID
+  unset PIO_S3_AWS_SECRET_ACCESS_KEY
 }
 
 beforeTearDown() {
@@ -40,7 +43,7 @@ test_web_params()
   capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
   assertEquals 0 ${rtrn}
   assertEquals \
-    "deploy --port 853211 -- --packages org.apache.hadoop:hadoop-aws:2.7.2" \
+    "deploy --port 853211 --" \
     "$(cat ${STD_OUT})"
   assertEquals "" "$(cat ${STD_ERR})"
 }
@@ -56,6 +59,34 @@ test_web_params_missing_port()
     "$(cat ${STD_ERR})"
 }
 
+test_web_params_with_s3_bucket()
+{
+  export PORT=853211
+  export PIO_S3_BUCKET_NAME=example-bucket
+  export PIO_S3_AWS_ACCESS_KEY_ID=YYYYY
+  export PIO_S3_AWS_SECRET_ACCESS_KEY=ZZZZZ
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 0 ${rtrn}
+  assertEquals \
+    "deploy --port 853211 -- --packages org.apache.hadoop:hadoop-aws:2.7.2" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
+test_web_params_with_s3_bucket_missing_key()
+{
+  export PORT=853211
+  export PIO_S3_BUCKET_NAME=example-bucket
+  
+  capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
+  assertEquals 0 ${rtrn}
+  assertEquals \
+    "deploy --port 853211 --" \
+    "$(cat ${STD_OUT})"
+  assertEquals "" "$(cat ${STD_ERR})"
+}
+
 test_web_params_with_pio_opts()
 {
   export PORT=853211
@@ -64,7 +95,7 @@ test_web_params_with_pio_opts()
   capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
   assertEquals 0 ${rtrn}
   assertEquals \
-    "deploy --port 853211 --variant best.json -- --packages org.apache.hadoop:hadoop-aws:2.7.2" \
+    "deploy --port 853211 --variant best.json --" \
     "$(cat ${STD_OUT})"
   assertEquals "" "$(cat ${STD_ERR})"
 }
@@ -77,7 +108,7 @@ test_web_params_with_spark_opts()
   capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
   assertEquals 0 ${rtrn}
   assertEquals \
-    "deploy --port 853211 -- --packages org.apache.hadoop:hadoop-aws:2.7.2 --master spark://localhost" \
+    "deploy --port 853211 -- --master spark://localhost" \
     "$(cat ${STD_OUT})"
   assertEquals "" "$(cat ${STD_ERR})"
 }
@@ -137,7 +168,7 @@ test_web_params_with_feedback_enabled()
   capture ${BUILDPACK_HOME}/bin/engine/heroku-buildpack-pio-web
   assertEquals 0 ${rtrn}
   assertEquals \
-    "deploy --port 853211 --feedback --event-server-ip example.herokuapp.com --event-server-port 443 --accesskey XXXXX -- --packages org.apache.hadoop:hadoop-aws:2.7.2" \
+    "deploy --port 853211 --feedback --event-server-ip example.herokuapp.com --event-server-port 443 --accesskey XXXXX --" \
     "$(cat ${STD_OUT})"
   assertEquals "" "$(cat ${STD_ERR})"
 }
