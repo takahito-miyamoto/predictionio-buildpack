@@ -30,19 +30,37 @@ The events data can be stored in:
 
 ### Memory
 
-This buildpack automatically trains the predictive model during [release phase](https://devcenter.heroku.com/articles/release-phase), which runs in a [one-off dyno](https://devcenter.heroku.com/articles/dynos). That dyno's memory capacity is a limiting factor at this time. Only [Performance dynos](https://www.heroku.com/pricing) with 2.5GB or 14GB RAM provide reasonable utility. This limitation can be worked-around by pointing the engine at an existing Spark cluster. See: [customizing environment variables, `PIO_SPARK_OPTS` & `PIO_TRAIN_SPARK_OPTS`](CUSTOM.md#environment-variables).
+This buildpack automatically trains the predictive model during [release phase](https://devcenter.heroku.com/articles/release-phase), which runs in a [one-off dyno](https://devcenter.heroku.com/articles/dynos). That dyno's memory capacity is a limiting factor at this time. Only [Performance dynos](https://www.heroku.com/pricing) with 2.5GB or 14GB RAM provide reasonable utility.
 
-### No Private Network
+This limitation can be worked-around by pointing the engine at an existing Spark cluster. See: [customizing environment variables, `PIO_SPARK_OPTS` & `PIO_TRAIN_SPARK_OPTS`](CUSTOM.md#environment-variables).
 
-[Spark clusters](https://spark.apache.org/docs/1.6.3/spark-standalone.html) require a private network, so they cannot be deployed in the [Common Runtime](https://devcenter.heroku.com/articles/dyno-runtime). To operate in the Common Runtime this buildpack executes Spark as a sub-process (i.e. [`--master local`](https://spark.apache.org/docs/1.6.3/#running-the-examples-and-shell)) within [one-off and web dynos](https://devcenter.heroku.com/articles/dynos). This buildpack does support executing jobs on an existing Spark cluster. See: [customizing environment variables, `PIO_SPARK_OPTS` & `PIO_TRAIN_SPARK_OPTS`](CUSTOM.md#environment-variables).
+### Private Network
+
+This is not a limitation for PredictionIO itself, but for the underlying Spark service. [Spark clusters](https://spark.apache.org/docs/1.6.3/spark-standalone.html) require a private network, so they cannot be deployed in the [Common Runtime](https://devcenter.heroku.com/articles/dyno-runtime).
+
+To operate in the Common Runtime this buildpack executes Spark as a sub-process (i.e. [`--master local`](https://spark.apache.org/docs/1.6.3/#running-the-examples-and-shell)) within [one-off and web dynos](https://devcenter.heroku.com/articles/dynos).
+
+This buildpack also supports executing jobs on an existing Spark cluster. See: [customizing environment variables, `PIO_SPARK_OPTS` & `PIO_TRAIN_SPARK_OPTS`](CUSTOM.md#environment-variables).
 
 ### Additional Service Dependencies
 
-Engines may require [Elasticsearch](https://predictionio.incubator.apache.org/system/) [ES] which is not currently supported on Heroku (see [this pull request](https://github.com/heroku/predictionio-buildpack/pull/16)). [Heroku Postgres](https://www.heroku.com/postgres) is the default storage repository, so this does not effect many engines. *There is [work underway](https://github.com/apache/incubator-predictionio/pull/336) in the PredictionIO project to support ES by upgrading to ES 5.x and migrating to pure-REST interface.*
+Engines may require [Elasticsearch](https://predictionio.incubator.apache.org/system/) [ES] which is not currently supported on Heroku (see [this pull request](https://github.com/heroku/predictionio-buildpack/pull/16)).
+
+[Heroku Postgres](https://www.heroku.com/postgres) is the default storage repository, so this does not effect many engines.
+
+*There is [work underway](https://github.com/apache/incubator-predictionio/pull/336) in the PredictionIO project to support ES by upgrading to ES 5.x and migrating to pure-REST interface.*
 
 ### Stateless Builds
 
-PredictionIO 0.10.0-incubating requires a database connection during the build phase. While this works fine in the [Common Runtime](https://devcenter.heroku.com/articles/dyno-runtime), it is not compatible with [Private Databases](https://devcenter.heroku.com/articles/heroku-postgres-and-private-spaces). *There is [work underway](https://github.com/apache/incubator-predictionio/pull/328) in the PredictionIO project to solve this problem by making `pio build` a stateless command. This upcoming feature is verified in the [compile with 0.11.0-SNAPSHOT test](https://github.com/heroku/predictionio-buildpack/blob/master/test/compile_test.sh).*
+PredictionIO 0.10.0-incubating requires a database connection during the build phase. While this works fine in the [Common Runtime](https://devcenter.heroku.com/articles/dyno-runtime), it is not compatible with [Private Databases](https://devcenter.heroku.com/articles/heroku-postgres-and-private-spaces).
+
+*There is [work underway](https://github.com/apache/incubator-predictionio/pull/328) in the PredictionIO project to solve this problem by making `pio build` a stateless command. This upcoming feature is verified in the [compile with 0.11.0-SNAPSHOT test](https://github.com/heroku/predictionio-buildpack/blob/master/test/compile_test.sh).*
+
+### Config Files
+
+PredictionIO [engine templates](https://predictionio.incubator.apache.org/gallery/template-gallery/) typically have some configuration values stored alongside the source code in `engine.json`. Some of these values may vary between deployments, such as in a [pipeline](https://devcenter.heroku.com/articles/pipelines), where the same slug will be used to connect to different databases for Review Apps, Staging, & Production.
+
+Heroku [config vars](https://devcenter.heroku.com/articles/config-vars) solve many of the problems associated with these committed configuration files. When using a template or implementing a custom engine, the developer may migrate the engine to read the [environment variables](https://github.com/heroku/predictionio-buildpack/blob/master/CUSTOM.md#environment-variables) instead of the default file-based config, e.g. `sys.env("PIO_EVENTSERVER_APP_NAME")`.
 
 ## Testing [![Build Status](https://travis-ci.org/heroku/predictionio-buildpack.svg?branch=master)](https://travis-ci.org/heroku/predictionio-buildpack)
 
