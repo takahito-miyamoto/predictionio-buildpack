@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# bin/test BUILD_DIR ENV_DIR
+
+cd "$1" && ./PredictionIO-dist/sbt/sbt test

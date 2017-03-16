@@ -62,12 +62,18 @@ PredictionIO [engine templates](https://predictionio.incubator.apache.org/galler
 
 Heroku [config vars](https://devcenter.heroku.com/articles/config-vars) solve many of the problems associated with these committed configuration files. When using a template or implementing a custom engine, the developer may migrate the engine to read the [environment variables](https://github.com/heroku/predictionio-buildpack/blob/master/CUSTOM.md#environment-variables) instead of the default file-based config, e.g. `sys.env("PIO_EVENTSERVER_APP_NAME")`.
 
-## Testing [![Build Status](https://travis-ci.org/heroku/predictionio-buildpack.svg?branch=master)](https://travis-ci.org/heroku/predictionio-buildpack)
+## Testing
 
-[Tests](test/) are composed and run using [heroku-buildpack-testrunner](https://github.com/heroku/heroku-buildpack-testrunner). Engine test cases are staged in the [`test/fixtures/`](test/fixtures/).
+### Buildpack [![Build Status](https://travis-ci.org/heroku/predictionio-buildpack.svg?branch=master)](https://travis-ci.org/heroku/predictionio-buildpack)
+
+[Tests](test/) covering this buildpack's build and release functionality are implemented with [heroku-buildpack-testrunner](https://github.com/heroku/heroku-buildpack-testrunner). Engine test cases are staged in the [`test/fixtures/`](test/fixtures/).
 
 Setup [testrunner with Docker](https://github.com/heroku/heroku-buildpack-testrunner#docker-usage), then run tests with:
 
 ```bash
 docker-compose -p pio -f test/docker-compose.yml run testrunner
 ```
+
+### Individual Apps
+
+Engines deployed as Heroku apps may automatically run their `sbt test` suite using Heroku CI (private beta) within a [Pipeline](https://devcenter.heroku.com/articles/pipelines).
