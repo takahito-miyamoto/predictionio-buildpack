@@ -76,4 +76,8 @@ docker-compose -p pio -f test/docker-compose.yml run testrunner
 
 ### Individual Apps
 
-Engines deployed as Heroku apps may automatically run their `sbt test` suite using Heroku CI (private beta) within a [Pipeline](https://devcenter.heroku.com/articles/pipelines).
+Engines deployed as Heroku apps may automatically run their `sbt test` suite using [Heroku CI (beta)](https://devcenter.heroku.com/articles/heroku-ci):
+
+>Heroku CI automatically runs tests for every subsequent push to your GitHub repository. Any push to any branch triggers a test run, including a push to master. This means that all GitHub pull requests are automatically tested, along with any merges to master.
+>
+> Test runs are executed inside an ephemeral Heroku app that is provisioned for the test run. The app is destroyed when the run completes.
