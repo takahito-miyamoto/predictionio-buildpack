@@ -99,7 +99,6 @@ dist_dir="$BUILD_DIR/$dist_name"
 # to align with the actual runtime.)
 app_namespace="pio-engine"
 app_prefix="/app/${app_namespace}"
-mkdir -p $app_prefix
 
 default_pio_env="config/pio-env.sh"
 custom_pio_env="$BUILD_DIR/config/pio-env.sh"
@@ -130,24 +129,28 @@ echo "Set-up runtime environment" | indent
 mkdir -p "$BUILD_DIR/.profile.d"
 cp -r .profile.d/* "$BUILD_DIR/.profile.d/" | indent
 # Load the env for the following build steps
-export_env_dir "$ENV_DIR" '^DATABASE_URL$'
+export_env_dir "$ENV_DIR" '^(PIO_\w+|DATABASE_URL)$'
 source .profile.d/pio-path.sh
 
-# Skip `pio build` for test runs
-# (`sbt test` performs the build itself)
-if [ "${IS_TEST_RUN:-}" = "true" ]
-then
-  topic 'Continuing to run tests'
-
-# Perform `pio build` for the engine.
-elif [ -f "${BUILD_DIR}/engine.json" ]
+if [ -f "${BUILD_DIR}/engine.json" ]
 then
   topic "Build PredictionIO engine"
-  # Move to dyno-compatible prefix for `pio build`
-  mv $BUILD_DIR/* $app_prefix
+
+  echo "Current/buildpack dir: $(pwd)" | indent
+  echo "Build dir: $BUILD_DIR" | indent
+  echo "Cache dir: $CACHE_DIR" | indent
+
+  # Move to dyno-runtime-compatible prefix for `pio build`
+  echo "Move to $app_prefix for 'pio build'" | indent
+  STAGE_THE_BUILD=$CACHE_DIR/app-prefix-stage
+  mkdir -p $STAGE_THE_BUILD
+  mv $BUILD_DIR/* $STAGE_THE_BUILD/
+  mkdir -p $app_prefix
+  mv $STAGE_THE_BUILD/* $app_prefix/
+  rm -rf $STAGE_THE_BUILD
   cd $app_prefix
-  #
-  if [ -n "${PIO_VERBOSE:-}" ]
+
+  if [ "${PIO_VERBOSE:-}" = "true" ]
   then
     $dist_name/bin/pio build --verbose | indent
   else
@@ -164,7 +167,7 @@ then
 
   echo "Make build artifacts available in runtime" | indent
   # After PIO build at the runtime prefix, move the engine into the slug
-  mv $app_prefix $BUILD_DIR
+  mv $app_prefix $BUILD_DIR || true
   # Move the Procfile(s) back to the top-level app directory or use default for engines
   # (`bin/release` default_process_types have no effect since this is never the last buildpack)
   if [ -f "${BUILD_DIR}/${app_namespace}/Procfile" ]
@@ -196,9 +199,6 @@ fi
 
 topic 'Install supplemental drivers'
 
-if [ "$POSTGRESQL_DRIVER" ]
-then
-  echo "+ PostgreSQL JDBC" | indent
-  mkdir -p "${BUILD_DIR}/lib"
-  curl -s -L "$POSTGRESQL_DRIVER" > "${BUILD_DIR}/lib/postgresql_jdbc.jar"
-fi
+echo "+ PostgreSQL JDBC" | indent
+mkdir -p "${BUILD_DIR}/lib"
+curl -s -L "$POSTGRESQL_DRIVER" > "${BUILD_DIR}/lib/postgresql_jdbc.jar"

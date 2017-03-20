@@ -1,5 +1,13 @@
 #!/bin/bash
 
 # bin/test BUILD_DIR ENV_DIR
+PIO_ENV_FILE="/app/conf/pio_env.test.sh"
 
-cd "$1" && ./PredictionIO-dist/sbt/sbt test
+# Tests environment config for PredictionIO; "pio_env.sh" for tests.
+if [ -f "$PIO_ENV_FILE" ]
+  then
+  echo "       Loading environment from '$PIO_ENV_FILE'"
+  source $PIO_ENV_FILE
+fi
+
+cd "/app/pio-engine" && ./PredictionIO-dist/sbt/sbt test
