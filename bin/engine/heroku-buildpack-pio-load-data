@@ -53,28 +53,22 @@ then
   set +e # allow non-zero exit codes
   echo "Checking if '$PIO_EVENTSERVER_APP_NAME' already exists in the eventserver."
   pio app show $PIO_EVENTSERVER_APP_NAME
-#  if [ $? -ne 0 ]
-#  then
-    set -e
+  set -e
 
-    if [ -z "$PIO_EVENTSERVER_ACCESS_KEY" ]
-    then
-      echo "PIO_EVENTSERVER_ACCESS_KEY is required to initialize the eventserver. Skipping data load."
-      # Exit code 3, so that release phase can detect and exit cleanly, 
-      # to then retry after a key is set.
-      exit 3
-    fi
-    
-    echo "Creating '$PIO_EVENTSERVER_APP_NAME' in the eventserver"
-    pio app new --access-key $PIO_EVENTSERVER_ACCESS_KEY $PIO_EVENTSERVER_APP_NAME | tee app-new-out.log
+  if [ -z "$PIO_EVENTSERVER_ACCESS_KEY" ]
+  then
+    echo "PIO_EVENTSERVER_ACCESS_KEY is required to initialize the eventserver. Skipping data load."
+    # Exit code 3, so that release phase can detect and exit cleanly, 
+    # to then retry after a key is set.
+    exit 3
+  fi
+  
+  echo "Creating '$PIO_EVENTSERVER_APP_NAME' in the eventserver"
+  pio app new --access-key $PIO_EVENTSERVER_ACCESS_KEY $PIO_EVENTSERVER_APP_NAME | tee app-new-out.log
 
-    # Capture the new App ID
-    EVENTSERVER_APP_ID=`cat app-new-out.log | ruby -E utf-8:utf-8 -e 'STDOUT << /id:\s+(\w+)/i.match(STDIN.read)[1]'`
+  # Capture the new App ID
+  EVENTSERVER_APP_ID=`cat app-new-out.log | ruby -E utf-8:utf-8 -e 'STDOUT << /id:\s+(\w+)/i.match(STDIN.read)[1]'`
 
-    echo "Importing events for training to App ID $EVENTSERVER_APP_ID"
-    eval "pio import --appid $EVENTSERVER_APP_ID --input $IMPORT_DATA_FILEPATH"
-#  else
-#    set -e
-#    echo "Found '$PIO_EVENTSERVER_APP_NAME' in the eventserver. Skipping initialization and data load."
-#  fi
+  echo "Importing events for training to App ID $EVENTSERVER_APP_ID"
+  eval "pio import --appid $EVENTSERVER_APP_ID --input $IMPORT_DATA_FILEPATH"
 fi
