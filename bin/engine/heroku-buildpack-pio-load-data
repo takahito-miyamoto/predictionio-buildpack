@@ -53,8 +53,8 @@ then
   set +e # allow non-zero exit codes
   echo "Checking if '$PIO_EVENTSERVER_APP_NAME' already exists in the eventserver."
   pio app show $PIO_EVENTSERVER_APP_NAME
-  if [ $? -ne 0 ]
-  then
+#  if [ $? -ne 0 ]
+#  then
     set -e
 
     if [ -z "$PIO_EVENTSERVER_ACCESS_KEY" ]
@@ -73,8 +73,8 @@ then
 
     echo "Importing events for training to App ID $EVENTSERVER_APP_ID"
     eval "pio import --appid $EVENTSERVER_APP_ID --input $IMPORT_DATA_FILEPATH"
-  else
-    set -e
-    echo "Found '$PIO_EVENTSERVER_APP_NAME' in the eventserver. Skipping initialization and data load."
-  fi
+#  else
+#    set -e
+#    echo "Found '$PIO_EVENTSERVER_APP_NAME' in the eventserver. Skipping initialization and data load."
+#  fi
 fi
